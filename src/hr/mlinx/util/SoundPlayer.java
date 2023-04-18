@@ -18,7 +18,7 @@ public class SoundPlayer {
             mc = midiSynth.getChannels();
 
             // try to set the midi sound to 808 tom preferably,
-            // if 808 tom is not possible try to set it to glockenspiel,
+            // if 808 tom is not possible try to set it to music box,
             // if neither are possible set it to midi at index 0
             String name;
             int midiIdx = 0;
