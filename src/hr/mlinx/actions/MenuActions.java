@@ -117,17 +117,6 @@ public class MenuActions {
         };
     }
 
-    public Action createMouseAction() {
-        return new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, """
-                        Left-click to add a solid tile, right-click to remove it.
-                        Drag the start/goal tile to change its position.""");
-            }
-        };
-    }
-
     public Action createKeysAction(KeyBindings keyBindings) {
         return new AbstractAction() {
             @Override
@@ -176,28 +165,42 @@ public class MenuActions {
         };
     }
 
+    public Action createMouseAction() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, """
+                        Left-click to add a solid tile, right-click to remove it.
+                        Drag the start/goal tile to change its position.""");
+            }
+        };
+    }
+
     public Action createInfoAction() {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null, """
-                        Depth-First and Breadth-First Search algorithms are unweighted.
-                        In this grid visualisation it means they don't consider any distances,
-                        such as the number of steps the path took, the distance from the goal, etc.
+                        The tiles of the grid in this visualisation can be thought of
+                        as nodes in a graph in which every non-solid tile is connected
+                        to 4 or less neighboring tiles, depending on which of them are
+                        also non-solid, and the cost/distance/weight of moving from one
+                        to another is always 1. So, all edges/neighbors of connected
+                        nodes/tiles have the same weight.
                         
-                        The other three algorithms are weighted and each take into consideration
-                        different variables.
+                        DFS is unweighted and doesn't guarantee the shortest path.
                         
-                        Out of the algorithms in this program, the following guarantee the shortest path:
-                        Breadth-First Search, Dijkstra's Algorithm and A* Search.
+                        BFS is unweighted, but since all edges have the same weight
+                        it does guarantee the shortest path.
                         
-                        Note:
-                        Since all 'nodes' or the tiles in the grid all have the same weight of 1,
-                        meaning the distance/amount of steps it takes to go from one tile to any
-                        neighboring/connected tile, that means that with grids like this,
-                        Breadth-First Search and Dijkstra's Algorithm are essentially the same.
-                        It would be different if, for example, the distance between each node/tile
-                        was different.""");
+                        Greedy Best-First Search is weighted, but doesn't guarantee
+                        the shortest path.
+                        
+                        Dijkstra's Algorithm is weighted and does guarantee the shortest
+                        path, but since all edges have the same weight in this particular
+                        grid system of nodes, it works essentially the same as BFS.
+                        
+                        A* Search is weighted and does guarantee the shortest path.""");
             }
         };
     }

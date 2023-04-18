@@ -16,8 +16,8 @@ public class MenuBar extends JMenuBar {
     private final JMenuItem runPauseItem, terminateItem;
     private final JMenuItem depthFirstItem, breadthFirstItem, greedyFirstItem, dijkstrasItem, aStarItem;
     private final JMenuItem randomMazeItem, clearPathItem, clearSolidItem, clearAllItem, toggleSoundItem;
-    private final JMenuItem mouseItem, keysItem, defaultsItem, resetGridItem;
-    private final JMenuItem infoItem;
+    private final JMenuItem keysItem, defaultsItem, resetGridItem;
+    private final JMenuItem mouseItem, infoItem;
 
     public MenuBar(Grid grid, Canvas canvas, Frame frame, SoundPlayer soundPlayer) {
         super();
@@ -55,18 +55,18 @@ public class MenuBar extends JMenuBar {
         add(optionsMenu);
 
         JMenu settingsMenu = new JMenu("Settings");
-        mouseItem = new JMenuItem("Mouse Usage");
         keysItem = new JMenuItem("Key Bindings");
         defaultsItem = new JMenuItem("Reset Key Bindings");
         resetGridItem = new JMenuItem("Reset Grid");
-        settingsMenu.add(mouseItem);
         settingsMenu.add(keysItem);
         settingsMenu.add(defaultsItem);
         settingsMenu.add(resetGridItem);
         add(settingsMenu);
 
         JMenu aboutMenu = new JMenu("About");
+        mouseItem = new JMenuItem("Mouse Usage");
         infoItem = new JMenuItem("Info on the Algorithms");
+        aboutMenu.add(mouseItem);
         aboutMenu.add(infoItem);
         add(aboutMenu);
 
@@ -106,11 +106,11 @@ public class MenuBar extends JMenuBar {
         clearAllItem.addActionListener(menuActions.createClearAllAction());
         toggleSoundItem.addActionListener(menuActions.createToggleSoundAction(toggleSoundItem, soundPlayer));
 
-        mouseItem.addActionListener(menuActions.createMouseAction());
         keysItem.addActionListener(menuActions.createKeysAction(keyBindings));
         defaultsItem.addActionListener(menuActions.createDefaultKeysAction(keyBindings));
         resetGridItem.addActionListener(menuActions.createResetGridAction());
 
+        mouseItem.addActionListener(menuActions.createMouseAction());
         infoItem.addActionListener(menuActions.createInfoAction());
 
         // here, as well, the order the actions are added should match the order of key bindings

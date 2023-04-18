@@ -14,7 +14,7 @@ public class Util {
         UIManager.put("MenuBar.font", ((Font) UIManager.get("MenuBar.font")).deriveFont(fontSize));
         UIManager.put("Menu.font", ((Font) UIManager.get("Menu.font")).deriveFont(fontSize));
         UIManager.put("MenuItem.font", ((Font) UIManager.get("MenuItem.font")).deriveFont(fontSize));
-        UIManager.put("Label.font", ((Font) UIManager.get("Label.font")).deriveFont(fontSize * 1.2f));
+        UIManager.put("Label.font", ((Font) UIManager.get("Label.font")).deriveFont(Font.PLAIN).deriveFont(fontSize * 1.2f));
 
         try {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
