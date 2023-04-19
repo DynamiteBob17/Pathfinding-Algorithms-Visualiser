@@ -86,6 +86,9 @@ public class GridMouseAdapter extends MouseAdapter {
     @Override
     public void mouseReleased(MouseEvent e) {
         if (canvas.searchNotRunning()) {
+            if (startPressed || goalPressed)
+                getTileFromMouse(e).setSolid(false);
+
             startPressed = goalPressed = false;
         }
     }
