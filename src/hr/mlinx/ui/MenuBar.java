@@ -4,6 +4,7 @@ import hr.mlinx.actions.KeyBindings;
 import hr.mlinx.actions.MenuActions;
 import hr.mlinx.algorithms.*;
 import hr.mlinx.board.Grid;
+import hr.mlinx.util.MazeAlgo;
 import hr.mlinx.util.SoundPlayer;
 
 import javax.swing.*;
@@ -15,7 +16,8 @@ public class MenuBar extends JMenuBar {
     // to not write everything in the constructor itself, but that's not a requirement
     private final JMenuItem runPauseItem, terminateItem;
     private final JMenuItem depthFirstItem, breadthFirstItem, greedyFirstItem, dijkstrasItem, aStarItem;
-    private final JMenuItem randomMazeItem, clearPathItem, clearSolidItem, clearAllItem, toggleSoundItem;
+    private final JMenuItem kruskalsItem, recBackItem;
+    private final JMenuItem clearPathItem, clearSolidItem, clearAllItem, toggleSoundItem;
     private final JMenuItem keysItem, defaultsItem, resetGridItem;
     private final JMenuItem mouseItem, infoItem;
 
@@ -34,7 +36,8 @@ public class MenuBar extends JMenuBar {
         greedyFirstItem = new JMenuItem("Greedy Best-First Search");
         dijkstrasItem = new JMenuItem("Dijkstra's Algorithm");
         aStarItem = new JMenuItem("A* Search");
-        randomMazeItem = new JMenuItem("Generate Random Maze");
+        kruskalsItem = new JMenuItem("Kruskal's Algorithm");
+        recBackItem = new JMenuItem("Recursive Backtracking");
         clearPathItem = new JMenuItem("Clear Path");
         clearSolidItem = new JMenuItem("Clear Solid Tiles");
         clearAllItem = new JMenuItem("Clear All Tiles");
@@ -45,9 +48,12 @@ public class MenuBar extends JMenuBar {
         algorithmsSubMenu.add(greedyFirstItem);
         algorithmsSubMenu.add(dijkstrasItem);
         algorithmsSubMenu.add(aStarItem);
+        JMenu mazeSubMenu = new JMenu("Generate Random Maze");
+        mazeSubMenu.add(kruskalsItem);
+        mazeSubMenu.add(recBackItem);
         JMenu optionsMenu = new JMenu("Options");
         optionsMenu.add(algorithmsSubMenu);
-        optionsMenu.add(randomMazeItem);
+        optionsMenu.add(mazeSubMenu);
         optionsMenu.add(clearPathItem);
         optionsMenu.add(clearSolidItem);
         optionsMenu.add(clearAllItem);
@@ -77,18 +83,18 @@ public class MenuBar extends JMenuBar {
         MenuActions menuActions = new MenuActions(grid, canvas, frame);
         KeyBindings keyBindings;
         // load the saved key bindings, if there aren't any then manually set the key bindings;
-        // the order of key and description strings has to match to make sense in the ui,
+        // the order of key and description strings as well as number has to match to make sense in the ui,
         // and also for the action map of the component since they will also be in order,
         // i.e. action0, action1...
         // (the component that has the key bindings is Canvas)
         if ((keyBindings = KeyBindings.load()) == null) {
             String[] defaultKeys = new String[] {
                     "SPACE", "C",
-                    "R", "W", "S", "A", "T"
+                    "W", "S", "A", "T"
             };
             keyBindings = new KeyBindings(defaultKeys, Arrays.copyOf(defaultKeys, defaultKeys.length), new String[] {
                     "Run/pause search", "Terminate search",
-                    "Random maze", "Clear path", "Clear solid tiles", "Clear all tiles", "Toggle sound"
+                    "Clear path", "Clear solid tiles", "Clear all tiles", "Toggle sound"
             }, "action");
         }
 
@@ -100,7 +106,8 @@ public class MenuBar extends JMenuBar {
         greedyFirstItem.addActionListener(menuActions.createAlgorithmAction(new GreedyBestFirstSearch(grid, canvas, soundPlayer)));
         dijkstrasItem.addActionListener(menuActions.createAlgorithmAction(new DijkstrasAlgorithm(grid, canvas, soundPlayer)));
         aStarItem.addActionListener(menuActions.createAlgorithmAction(new AStarSearch(grid, canvas, soundPlayer)));
-        randomMazeItem.addActionListener(menuActions.createRandomMazeAction());
+        kruskalsItem.addActionListener(menuActions.createRandomMazeAction(MazeAlgo.KRUSKAL));
+        recBackItem.addActionListener(menuActions.createRandomMazeAction(MazeAlgo.REC_BACK));
         clearPathItem.addActionListener(menuActions.createClearPathAction());
         clearSolidItem.addActionListener(menuActions.createClearSolidAction());
         clearAllItem.addActionListener(menuActions.createClearAllAction());
@@ -113,10 +120,11 @@ public class MenuBar extends JMenuBar {
         mouseItem.addActionListener(menuActions.createMouseAction());
         infoItem.addActionListener(menuActions.createInfoAction());
 
-        // here, as well, the order the actions are added should match the order of key bindings
+        // here, as well, the order the actions are added as well as the number
+        // should match the order of key bindings
         Action[] actionsToBind = new Action[] {
                 getAction(runPauseItem), getAction(terminateItem),
-                getAction(randomMazeItem), getAction(clearPathItem), getAction(clearSolidItem), getAction(clearAllItem), getAction(toggleSoundItem)
+                getAction(clearPathItem), getAction(clearSolidItem), getAction(clearAllItem), getAction(toggleSoundItem)
         };
         canvas.initialBindKeys(keyBindings, actionsToBind);
     }

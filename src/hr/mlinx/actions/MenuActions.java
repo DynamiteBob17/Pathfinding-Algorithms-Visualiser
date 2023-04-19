@@ -5,6 +5,7 @@ import hr.mlinx.board.Grid;
 import hr.mlinx.ui.Canvas;
 import hr.mlinx.ui.Frame;
 import hr.mlinx.ui.KeyBindPanel;
+import hr.mlinx.util.MazeAlgo;
 import hr.mlinx.util.SoundPlayer;
 
 import javax.swing.*;
@@ -58,13 +59,13 @@ public class MenuActions {
         };
     }
 
-    public Action createRandomMazeAction() {
+    public Action createRandomMazeAction(MazeAlgo mazeAlgo) {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (canvas.searchNotRunning()) {
                     grid.clearAll();
-                    grid.randomMaze();
+                    grid.randomMaze(mazeAlgo);
                     canvas.repaint();
                 }
             }
@@ -158,7 +159,7 @@ public class MenuActions {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (canvas.searchNotRunning()) {
-                    grid.reset();
+                    grid.reset(canvas.getWidth(), canvas.getHeight());
                     canvas.repaint();
                 }
             }
@@ -171,7 +172,10 @@ public class MenuActions {
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null, """
                         Left-click to add a solid tile, right-click to remove it.
-                        Drag the start/goal tile to change its position.""");
+                        
+                        Drag the start/goal tile to change its position.
+                        
+                        Use the scroll wheel to change the number of tiles.""");
             }
         };
     }
@@ -181,6 +185,13 @@ public class MenuActions {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null, """
+                        Colors:
+                            Red/green = start/goal tile
+                            White = non-solid tile
+                            Dark blue = solid tile
+                            Grayish blue = tile marked to be analyzed at some point in each algorithm
+                            Light blue = tile that has been analyzed
+                            
                         The tiles of the grid in this visualisation can be thought of
                         as nodes in a graph in which every non-solid tile is connected
                         to 4 or less neighboring tiles, depending on which of them are
