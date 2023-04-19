@@ -16,16 +16,6 @@ public class AStarSearch extends SearchAlgorithm {
     }
 
     @Override
-    public String getIdentifier() {
-        return "A*";
-    }
-
-    @Override
-    protected long sleepMilli() {
-        return 33;
-    }
-
-    @Override
     public void search() {
         Comparator<Tile> comparator = Comparator.comparingInt(Tile::getFCost).thenComparingInt(Tile::getHCost);
         // openSet acts as a priority queue; if in this specific algorithm implementation
@@ -62,6 +52,21 @@ public class AStarSearch extends SearchAlgorithm {
 
             sleep();
         }
+    }
+
+    @Override
+    protected long sleepMin() {
+        return 5;
+    }
+
+    @Override
+    protected long sleepMax() {
+        return 50;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "A*";
     }
 
 }

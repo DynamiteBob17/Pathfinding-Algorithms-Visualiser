@@ -16,16 +16,6 @@ public class GreedyBestFirstSearch extends SearchAlgorithm {
     }
 
     @Override
-    protected long sleepMilli() {
-        return 33;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return "Greedy";
-    }
-
-    @Override
     public void search() {
         PriorityQueue<Tile> prioQueue = new PriorityQueue<>(Comparator.comparingInt(Tile::getHCost));
 
@@ -49,6 +39,21 @@ public class GreedyBestFirstSearch extends SearchAlgorithm {
 
             sleep();
         }
+    }
+
+    @Override
+    protected long sleepMin() {
+        return 5;
+    }
+
+    @Override
+    protected long sleepMax() {
+        return 50;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "Greedy";
     }
 
 }

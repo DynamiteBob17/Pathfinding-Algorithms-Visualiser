@@ -30,6 +30,7 @@ public class Canvas extends JPanel {
         MouseAdapter mouseAdapter = new GridMouseAdapter(grid, this);
         addMouseListener(mouseAdapter); // for just pressing/clicking
         addMouseMotionListener(mouseAdapter); // for dragging
+        addMouseWheelListener(mouseAdapter); // for scrolling
 
         isUnix = Util.isUnix();
         if (isUnix) tk = Toolkit.getDefaultToolkit();

@@ -18,9 +18,7 @@ public class Frame extends JFrame {
     public Frame() {
         super();
 
-        // better that both are odd numbers because the maze generator
-        // will generate a double wall which is visually unappealing
-        Grid grid = new Grid(49, 27);
+        Grid grid = new Grid(8);
         Canvas canvas = new Canvas(grid);
         canvas.addComponentListener(new ComponentAdapter() {
             @Override

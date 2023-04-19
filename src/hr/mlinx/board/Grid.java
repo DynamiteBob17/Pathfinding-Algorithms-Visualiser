@@ -1,26 +1,52 @@
 package hr.mlinx.board;
 
 import hr.mlinx.malkfilipp_maze_runner.Maze;
+import hr.mlinx.maze_runner.MazeGenerator;
 import hr.mlinx.ui.Canvas;
+import hr.mlinx.util.MazeAlgo;
 
 import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
 
+import static hr.mlinx.board.GridDimensionChange.DECREMENT;
+import static hr.mlinx.board.GridDimensionChange.INCREMENT;
+
 public class Grid {
 
-    private final int columns, rows;
+    // these are just for painting the canvas so that
+    // every time we change the number of columns and rows
+    // we add 6 columns and 4 rows to keep some kind of
+    // aspect ratio so that the tiles appear as close as possible to
+    // a square; also, we are not making it 3 and 2 because we need the
+    // number of columns and rows to always be odd
+    private static final int COLUMN_ASPECT = 6;
+    private static final int ROW_ASPECT = 4;
+    public static final int MAX_STEPS = 30;
+    private static final int MIN_COLUMNS = 5;
+    private static final int MAX_COLUMNS = calculateColumns(MAX_STEPS);
+    private static final int MIN_ROWS = 3;
+    private static final int MAX_ROWS = calculateRows(MAX_STEPS);
+
+    private int steps;
+    private final int defaultSteps;
+    private int columns, rows;
     private final Tile[][] tiles;
     private Tile startTile, goalTile;
     private double tileWidth, tileHeight;
 
-    public Grid(int columns, int rows) {
-        this.columns = columns;
-        this.rows = rows;
+    public Grid(int steps) {
+        if (steps < 0)
+            throw new IllegalArgumentException("Steps cannot be negative.");
+        this.steps = steps;
+        defaultSteps = steps;
+        columns = calculateColumns(steps);
+        rows = calculateRows(steps);
 
-        tiles = new Tile[columns][rows];
-        for (int i = 0; i < columns; ++i) {
-            for (int j = 0; j < rows; ++j) {
+        // not defined as [rows][columns] to sort of match how it's drawn on screen in the xy cartesian system
+        tiles = new Tile[MAX_COLUMNS][MAX_ROWS];
+        for (int i = 0; i < MAX_COLUMNS; ++i) {
+            for (int j = 0; j < MAX_ROWS; ++j) {
                 tiles[i][j] = new Tile(i, j);
             }
         }
@@ -73,26 +99,44 @@ public class Grid {
         clear(true, true,  false);
     }
 
-    public void reset() {
+    public void reset(int canvasWidth, int canvasHeight) {
+        steps = defaultSteps;
+        columns = calculateColumns(steps);
+        rows = calculateRows(steps);
+        setTileSizes(canvasWidth, canvasHeight);
+
         clear(true, true, true);
     }
 
-    public void randomMaze() {
-        Maze maze = new Maze(rows, columns);
+    public void randomMaze(MazeAlgo mazeAlgo) {
         unsetStartGoal();
 
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                // indices are flipped here because
-                // the Maze class is created to be accessed as a matrix where
-                // the i is row and j is column,
-                // whereas the in the Grid and Tile classes i is column and j is row
-                // to sort of match how things are drawn on the screen regarding the x and y coordinates
-                tiles[j][i].setSolid(maze.getGrid()[i][j].isWall());
+        if (mazeAlgo == MazeAlgo.KRUSKAL) {
+            Maze maze = new Maze(rows, columns);
+
+            for (int i = 0; i < rows; ++i) {
+                for (int j = 0; j < columns; ++j) {
+                    // indices are flipped here because
+                    // the Maze class is created to be accessed as a matrix where
+                    // the i is row and j is column,
+                    // whereas the in the Grid and Tile classes i is column and j is row
+                    // to sort of match how things are drawn on the screen regarding the x and y coordinates
+                    tiles[j][i].setSolid(maze.getGrid()[i][j].isWall());
+                }
+            }
+        } else if (mazeAlgo == MazeAlgo.REC_BACK) {
+            double[][] maze = MazeGenerator.generateMaze(columns, rows);
+
+            for (int i = 0; i < columns; ++i) {
+                for (int j = 0; j < rows; ++j) {
+                    tiles[i][j].setSolid(maze[i + 1][j + 1] == 1);
+                }
             }
         }
 
-        setStartGoal(maze.getEntranceColumn(), 0, maze.getExitColumn(), rows - 1);
+        int secondColumn = 1, firstRow = 0;
+        int secondToLastColumn = columns - 2, lastRow = rows - 1;
+        setStartGoal(secondColumn, firstRow, secondToLastColumn, lastRow);
     }
 
     // if this method is used, the setStartGoal method has to be used at an appropriate point afterwards
@@ -108,6 +152,13 @@ public class Grid {
         newGoalTile.setGoal(true);
         startTile = newStartTile;
         goalTile = newGoalTile;
+
+        // we don't do this automatically when changing start/goal tile on the canvas in the ui
+        // to not change the colors already on the cells we are dragging over,
+        // only when we drop the start/tile do we set that tile to non-solid, but we do that
+        // in the GridMouseAdapter manually
+        startTile.setSolid(false);
+        goalTile.setSolid(false);
     }
 
     public void uiSetStartTile(Tile tile) {
@@ -135,35 +186,36 @@ public class Grid {
     public List<Tile> getUncheckedEdges(Tile tile) {
         List<Tile> edges = new ArrayList<>();
         Tile edge;
+        int column, row;
 
-        try {
-            edge = tiles[tile.getColumn() - 1][tile.getRow()];
+        if ((column = tile.getColumn() - 1) >= 0) {
+            edge = tiles[column][tile.getRow()];
             if (edge.notSolid() && edge.notChecked()) {
                 edges.add(edge);
                 edge.setMarked(true);
             }
-        } catch (ArrayIndexOutOfBoundsException e) {/**/}
-        try {
-            edge = tiles[tile.getColumn()][tile.getRow() + 1];
+        }
+        if ((row = tile.getRow() + 1) < rows) {
+            edge = tiles[tile.getColumn()][row];
             if (edge.notSolid() && edge.notChecked()) {
                 edges.add(edge);
                 edge.setMarked(true);
             }
-        } catch (ArrayIndexOutOfBoundsException e) {/**/}
-        try {
-            edge = tiles[tile.getColumn() + 1][tile.getRow()];
+        }
+        if ((column = tile.getColumn() + 1) < columns) {
+            edge = tiles[column][tile.getRow()];
             if (edge.notSolid() && edge.notChecked()) {
                 edges.add(edge);
                 edge.setMarked(true);
             }
-        } catch (ArrayIndexOutOfBoundsException e) {/**/}
-        try {
-            edge = tiles[tile.getColumn()][tile.getRow() - 1];
+        }
+        if ((row = tile.getRow() - 1) >= 0) {
+            edge = tiles[tile.getColumn()][row];
             if (edge.notSolid() && edge.notChecked()) {
                 edges.add(edge);
                 edge.setMarked(true);
             }
-        } catch (ArrayIndexOutOfBoundsException e) {/**/}
+        }
 
         return edges;
     }
@@ -181,6 +233,36 @@ public class Grid {
     public void setTileSizes(int canvasWidth, int canvasHeight) {
         tileWidth = (double) canvasWidth / columns;
         tileHeight = (double) canvasHeight / rows;
+    }
+
+    private void changeStep(GridDimensionChange gdc, int canvasWidth, int canvasHeight) {
+        int steps = this.steps + (gdc == DECREMENT ? -1 : 1);
+
+        // only have to check to columns, because if columns are out of bounds, the rows will be too
+        if (steps < 0 || steps > MAX_STEPS)
+            return;
+
+        this.steps = steps;
+        this.columns = calculateColumns(steps);
+        this.rows = calculateRows(steps);
+
+        // check if start or goal tiles are out of the visible grid now
+        // and set them to their default positions if so
+        if (startTile.getColumn() >= columns || startTile.getRow() >= rows
+            || goalTile.getColumn() >= columns || goalTile.getRow() >= rows) {
+            unsetStartGoal();
+            setStartGoal(getDefaultStartX(), getDefaultStartY(), getDefaultGoalX(), getDefaultGoalY());
+        }
+
+        setTileSizes(canvasWidth, canvasHeight);
+    }
+
+    public void decrement(int canvasWidth, int canvasHeight) {
+        changeStep(DECREMENT, canvasWidth, canvasHeight);
+    }
+
+    public void increment(int canvasWidth, int canvasHeight) {
+        changeStep(INCREMENT, canvasWidth, canvasHeight);
     }
 
     public void calculateHCosts() {
@@ -214,6 +296,10 @@ public class Grid {
         return getRows() / 2;
     }
 
+    public int getSteps() {
+        return steps;
+    }
+
     public int getColumns() {
         return columns;
     }
@@ -229,4 +315,17 @@ public class Grid {
     public Tile getGoalTile() {
         return goalTile;
     }
+
+    private static int calculateDimension(int min, int aspect, int steps) {
+        return min + aspect * steps;
+    }
+
+    private static int calculateColumns(int steps) {
+        return calculateDimension(MIN_COLUMNS, COLUMN_ASPECT, steps);
+    }
+
+    private static int calculateRows(int steps) {
+        return calculateDimension(MIN_ROWS, ROW_ASPECT, steps);
+    }
+
 }

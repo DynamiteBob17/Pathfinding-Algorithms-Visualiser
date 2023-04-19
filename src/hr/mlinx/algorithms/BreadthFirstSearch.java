@@ -15,16 +15,6 @@ public class BreadthFirstSearch extends SearchAlgorithm {
     }
 
     @Override
-    public String getIdentifier() {
-        return "Breadth";
-    }
-
-    @Override
-    protected long sleepMilli() {
-        return 20;
-    }
-
-    @Override
     public void search() {
         List<Tile> queue = new ArrayList<>();
 
@@ -48,6 +38,21 @@ public class BreadthFirstSearch extends SearchAlgorithm {
 
             sleep();
         }
+    }
+
+    @Override
+    protected long sleepMin() {
+        return 2;
+    }
+
+    @Override
+    protected long sleepMax() {
+        return 28;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "Breadth";
     }
 
 }

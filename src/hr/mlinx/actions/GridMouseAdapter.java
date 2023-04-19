@@ -8,6 +8,7 @@ import hr.mlinx.util.Util;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 public class GridMouseAdapter extends MouseAdapter {
 
@@ -93,4 +94,16 @@ public class GridMouseAdapter extends MouseAdapter {
         }
     }
 
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (canvas.searchNotRunning()) {
+            if (e.getWheelRotation() < 0) {
+                grid.decrement(canvas.getWidth(), canvas.getHeight());
+                canvas.repaint();
+            } else if (e.getWheelRotation() > 0) {
+                grid.increment(canvas.getWidth(), canvas.getHeight());
+                canvas.repaint();
+            }
+        }
+    }
 }

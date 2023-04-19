@@ -4,6 +4,7 @@ import hr.mlinx.board.Grid;
 import hr.mlinx.board.Tile;
 import hr.mlinx.ui.Canvas;
 import hr.mlinx.util.SoundPlayer;
+import hr.mlinx.util.Util;
 
 public abstract class SearchAlgorithm implements Runnable {
 
@@ -11,6 +12,7 @@ public abstract class SearchAlgorithm implements Runnable {
     protected Canvas canvas;
     protected SoundPlayer soundPlayer;
     protected Tile startTile, goalTile;
+    protected long sleep; // in milliseconds
 
     public SearchAlgorithm(Grid grid, Canvas canvas, SoundPlayer soundPlayer) {
         this.grid = grid;
@@ -18,15 +20,21 @@ public abstract class SearchAlgorithm implements Runnable {
         this.soundPlayer = soundPlayer;
     }
 
+    protected abstract void search();
+
+    // for largest possible grid, smaller numbers = visualisation will be faster
+    protected abstract long sleepMin();
+
+    // for smallest possible grid, bigger numbers = visualisation will be slower
+    protected abstract long sleepMax();
+
     // this is just for the ui
     public abstract String getIdentifier();
 
-    protected abstract void search();
-
-    protected abstract long sleepMilli();
-
     @Override
     public void run() {
+        precalculateSleep();
+
         canvas.setSearchRunning(true);
         canvas.setStopRunningSearch(false);
         canvas.turnOffPauseRunningSearch();
@@ -50,7 +58,7 @@ public abstract class SearchAlgorithm implements Runnable {
     }
 
     protected void sleep() {
-        long nano = (long) (sleepMilli() * 1_000_000.0);
+        long nano = (long) (sleep * 1_000_000.0);
         long start = System.nanoTime();
         long end;
         do {
@@ -82,6 +90,10 @@ public abstract class SearchAlgorithm implements Runnable {
 
         current.setPath(true);
         soundPlayer.play(current.getHCost());
+    }
+
+    protected void precalculateSleep() {
+        sleep = (long) Util.map(grid.getSteps(), 0, Grid.MAX_STEPS, sleepMax(), sleepMin());
     }
 
 }

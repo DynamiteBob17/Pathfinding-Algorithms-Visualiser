@@ -16,16 +16,6 @@ public class DijkstrasAlgorithm extends SearchAlgorithm {
     }
 
     @Override
-    public String getIdentifier() {
-        return "Dijkstra";
-    }
-
-    @Override
-    protected long sleepMilli() {
-        return 20;
-    }
-
-    @Override
     public void search() {
         Comparator<Tile> comparator = Comparator.comparingInt(Tile::getGCost);
         // openSet acts as a priority queue; if in this specific algorithm implementation
@@ -62,6 +52,21 @@ public class DijkstrasAlgorithm extends SearchAlgorithm {
 
             sleep();
         }
+    }
+
+    @Override
+    protected long sleepMin() {
+        return 2;
+    }
+
+    @Override
+    protected long sleepMax() {
+        return 28;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "Dijkstra";
     }
 
 }
