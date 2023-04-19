@@ -6,7 +6,7 @@
 
     <groupId>hr.mlinx</groupId>
     <artifactId>PathfindingVisualiser</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <build>
         <sourceDirectory>src</sourceDirectory>
