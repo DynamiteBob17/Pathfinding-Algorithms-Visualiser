@@ -238,7 +238,6 @@ public class Grid {
     private void changeStep(GridDimensionChange gdc, int canvasWidth, int canvasHeight) {
         int steps = this.steps + (gdc == DECREMENT ? -1 : 1);
 
-        // only have to check to columns, because if columns are out of bounds, the rows will be too
         if (steps < 0 || steps > MAX_STEPS)
             return;
 
