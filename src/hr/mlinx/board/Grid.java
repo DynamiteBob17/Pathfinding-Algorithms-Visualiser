@@ -66,6 +66,11 @@ public class Grid {
         }
     }
 
+    public void setTileSizes(int canvasWidth, int canvasHeight) {
+        tileWidth = (double) canvasWidth / columns;
+        tileHeight = (double) canvasHeight / rows;
+    }
+
     public void clear(boolean clearPath, boolean clearSolid, boolean resetStartGoal) {
         for (int i = 0; i < columns; ++i) {
             for (int j = 0; j < rows; ++j) {
@@ -177,10 +182,6 @@ public class Grid {
         goalTile = tile;
     }
 
-    public Tile getTile(int column, int row) {
-        return tiles[column][row];
-    }
-
     // this method marks the edges that are not checked,
     // so it should be used before repainting the canvas
     public List<Tile> getUncheckedEdges(Tile tile) {
@@ -220,21 +221,6 @@ public class Grid {
         return edges;
     }
 
-    public void resetTileCosts() {
-        for (int i = 0; i < columns; ++i) {
-            for (int j = 0; j < rows; ++j) {
-                tiles[i][j].setGCost(0);
-                tiles[i][j].setHCost(0);
-                tiles[i][j].setFCost(0);
-            }
-        }
-    }
-
-    public void setTileSizes(int canvasWidth, int canvasHeight) {
-        tileWidth = (double) canvasWidth / columns;
-        tileHeight = (double) canvasHeight / rows;
-    }
-
     private void changeStep(GridDimensionChange gdc, int canvasWidth, int canvasHeight) {
         int steps = this.steps + (gdc == DECREMENT ? -1 : 1);
 
@@ -264,6 +250,16 @@ public class Grid {
         changeStep(INCREMENT, canvasWidth, canvasHeight);
     }
 
+    public void resetTileCosts() {
+        for (int i = 0; i < columns; ++i) {
+            for (int j = 0; j < rows; ++j) {
+                tiles[i][j].setGCost(0);
+                tiles[i][j].setHCost(0);
+                tiles[i][j].setFCost(0);
+            }
+        }
+    }
+
     public void calculateHCosts() {
         for (int i = 0; i < columns; ++i) {
             for (int j = 0; j < rows; ++j) {
@@ -277,6 +273,18 @@ public class Grid {
         int furthestRow = goalTile.getRow() >= rows / 2 ? 0 : rows - 1;
 
         return goalTile.getManhattanDistance(tiles[furthestColumn][furthestRow]);
+    }
+
+    private static int calculateDimension(int min, int aspect, int steps) {
+        return min + aspect * steps;
+    }
+
+    private static int calculateColumns(int steps) {
+        return calculateDimension(MIN_COLUMNS, COLUMN_ASPECT, steps);
+    }
+
+    private static int calculateRows(int steps) {
+        return calculateDimension(MIN_ROWS, ROW_ASPECT, steps);
     }
 
     private int getDefaultStartX() {
@@ -307,24 +315,16 @@ public class Grid {
         return rows;
     }
 
+    public Tile getTile(int column, int row) {
+        return tiles[column][row];
+    }
+
     public Tile getStartTile() {
         return startTile;
     }
 
     public Tile getGoalTile() {
         return goalTile;
-    }
-
-    private static int calculateDimension(int min, int aspect, int steps) {
-        return min + aspect * steps;
-    }
-
-    private static int calculateColumns(int steps) {
-        return calculateDimension(MIN_COLUMNS, COLUMN_ASPECT, steps);
-    }
-
-    private static int calculateRows(int steps) {
-        return calculateDimension(MIN_ROWS, ROW_ASPECT, steps);
     }
 
 }
