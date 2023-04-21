@@ -1,14 +1,10 @@
 package hr.mlinx.algorithms;
 
 import hr.mlinx.board.Grid;
-import hr.mlinx.board.Tile;
 import hr.mlinx.ui.Canvas;
 import hr.mlinx.util.SoundPlayer;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BreadthFirstSearch extends SearchAlgorithm {
+public class BreadthFirstSearch extends SimpleQueueSearch {
 
     public BreadthFirstSearch(Grid grid, Canvas canvas, SoundPlayer soundPlayer) {
         super(grid, canvas, soundPlayer);
@@ -16,28 +12,7 @@ public class BreadthFirstSearch extends SearchAlgorithm {
 
     @Override
     public void search() {
-        List<Tile> queue = new ArrayList<>();
-
-        queue.add(startTile);
-
-        while (!queue.isEmpty()) {
-            Tile current = queue.remove(0);
-
-            List<Tile> edges = grid.getUncheckedEdges(current);
-
-            if (commonMiddleStep(current)) {
-                return;
-            }
-
-            for (Tile edge : edges) {
-                if (!queue.contains(edge)) {
-                    queue.add(edge);
-                    edge.setParent(current);
-                }
-            }
-
-            sleep();
-        }
+        simpleQueueSearch(false);
     }
 
     @Override

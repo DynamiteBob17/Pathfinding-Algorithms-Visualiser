@@ -57,15 +57,6 @@ public abstract class SearchAlgorithm implements Runnable {
         canvas.turnOffPauseRunningSearch();
     }
 
-    protected void sleep() {
-        long nano = (long) (sleep * 1_000_000.0);
-        long start = System.nanoTime();
-        long end;
-        do {
-            end = System.nanoTime();
-        } while (start + nano >= end);
-    }
-
     protected boolean commonMiddleStep(Tile current) {
         current.setChecked(true);
         soundPlayer.play(current.getHCost());
@@ -90,6 +81,15 @@ public abstract class SearchAlgorithm implements Runnable {
 
         current.setPath(true);
         soundPlayer.play(current.getHCost());
+    }
+
+    protected void sleep() {
+        long nano = (long) (sleep * 1_000_000.0);
+        long start = System.nanoTime();
+        long end;
+        do {
+            end = System.nanoTime();
+        } while (start + nano >= end);
     }
 
     protected void precalculateSleep() {
