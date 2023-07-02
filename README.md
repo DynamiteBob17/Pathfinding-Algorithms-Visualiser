@@ -1,4 +1,8 @@
 # About
+- desktop pathfinding algorithms visualiser with audio feedback like in those sorting algorithm visualisers all over YouTube
+- algorithms featured: depth-first, breadth-first and greedy-first search, Dijkstra's algorithm and A Star Search
+- other than placing and removing the different sized blocks that are obstacles, you can also choose to generate a maze with 2 algorithms: Kruskal's and Recursive Backtracking algorithms
+- also uses some serialization/deserialization features to save your custom key bindings for using the program
 - [live demo](https://drive.google.com/file/d/1gvM60ihRaTIwT31ex3FoCBo9PGQA8zNv/view)
 
 # How to use
