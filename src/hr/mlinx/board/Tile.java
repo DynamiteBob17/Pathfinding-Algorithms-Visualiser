@@ -46,7 +46,7 @@ public class Tile {
         if (this == other)
             return true;
         if (!(other instanceof Tile otherTile))
-            return true;
+            return false;
 
         return this.column == otherTile.column && this.row == otherTile.row;
     }
